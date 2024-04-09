@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import PT from 'prop-types'
-// import axios from 'axios'
 
 export default function ArticleForm({ postArticle, updateArticle, setCurrentArticleId, currentArticle }) {
   const [values, setValues] = useState({
@@ -10,8 +9,13 @@ export default function ArticleForm({ postArticle, updateArticle, setCurrentArti
   })
 
   useEffect(() => {
-    // const token = localStorage.getItem('token')
-   
+    if (currentArticle) {
+      setValues({
+        title: currentArticle.title,
+        text: currentArticle.text,
+        topic: currentArticle.topic,
+      })
+    }
   }, [currentArticle])
 
   const onChange = evt => {
@@ -22,10 +26,16 @@ export default function ArticleForm({ postArticle, updateArticle, setCurrentArti
   const onSubmit = evt => {
     evt.preventDefault()
     if (currentArticle) {
-      updateArticle(values)
+      updateArticle(currentArticle.article_id,values)
+      // setCurrentArticleId(null) // Move this inside the updateArticle callback
     } else {
       postArticle(values)
     }
+    setValues({
+      title: '',
+      text: '',
+      topic: '',
+    })
   }
 
   const isDisabled = () => {
@@ -56,20 +66,18 @@ export default function ArticleForm({ postArticle, updateArticle, setCurrentArti
         <option value="Node">Node</option>
       </select>
       <div className="button-group">
-        <button disabled={isDisabled()} id="submitArticle">Submit</button>
-        <button onClick={() => setCurrentArticleId(null)}>Cancel edit</button>
+        <button disabled={isDisabled()} id="submitArticle" type="submit">Submit</button> {/* Added type="submit" */}
+        {currentArticle && <button type="button" onClick={() => setCurrentArticleId(null)}>Cancel edit</button>} {/* Added type="button" */}
       </div>
     </form>
   )
 }
 
-
-// 🔥 No touchy: LoginForm expects the following props exactly:
 ArticleForm.propTypes = {
   postArticle: PT.func.isRequired,
   updateArticle: PT.func.isRequired,
   setCurrentArticleId: PT.func.isRequired,
-  currentArticle: PT.shape({ // can be null or undefined, meaning "create" mode (as opposed to "update")
+  currentArticle: PT.shape({
     article_id: PT.number.isRequired,
     title: PT.string.isRequired,
     text: PT.string.isRequired,

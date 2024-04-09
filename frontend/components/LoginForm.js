@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import PT from 'prop-types';
-import { axiosWithAuth } from '../axios';
 
-export default function LoginForm() {
-  const navigate = useNavigate();
+
+export default function LoginForm(props) {
+  
   const [values, setValues] = useState({
     username: '',
     password: '',
   });
-
+const {login} = props;
   const onChange = evt => {
     const { id, value } = evt.target;
     setValues({ ...values, [id]: value });
@@ -17,14 +16,7 @@ export default function LoginForm() {
 
   const onSubmit = evt => {
     evt.preventDefault();
-    axiosWithAuth().post('http://localhost:9000/api/login', values)
-      .then(res => {
-        localStorage.setItem("token", res.data.payload);
-        navigate('/Articles');
-      })
-      .catch(err => {
-        console.log(err);
-      });
+   login(values)
   };
 
   const isDisabled = () => {
